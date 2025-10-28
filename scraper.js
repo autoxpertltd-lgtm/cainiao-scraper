@@ -4,6 +4,9 @@ const puppeteer = require('puppeteer');           // npm i puppeteer
 const UA = require('random-useragent');           // npm i random-useragent
 const fs = require('fs');
 const path = require('path');
+const CONCURRENCY = 2;       // eyni anda 2 izləmə kodu yoxlanacaq
+const PER_TRACKING_MAX_MS = 30000; // (istəyə görə) 30s-ə endirdim
+
 
 /** ───────────── SƏNİN VERDİYİN DƏYƏRLƏR ───────────── **/
 const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwO09UI9cMA2Gj2NIAQAkUCgEb0x3U9E5xaUBQApvuTn-nIs9Ip1DyMlRSXjgC12YCV/exec';
@@ -190,28 +193,57 @@ async function scrapeOne(browser, tracking) {
 }
 
 async function main() {
+  console.log('=== RUN START ===');
   const list = await getTrackingList();
   if (!list.length) { console.log('Heç bir izləmə kodu tapılmadı.'); return; }
 
   const browser = await puppeteer.launch({
+    headless: 'new',
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-gpu',
-      '--disable-dev-shm-usage'   // GitHub Actions mühitində vacib
+      '--disable-dev-shm-usage',
+      '--no-zygote',
+      '--single-process',
+      '--window-size=1280,900'
     ]
   });
 
-  for (const tr of list) {
-    console.log('Yoxlanır:', tr);
-    const { statusAZ } = await scrapeOne(browser, tr);
-    console.log(' →', statusAZ);
-    await postResult(tr, statusAZ);
-    await sleep(1500 + Math.floor(Math.random()*1200));
-  }
+  // sadə “həcmə görə” paralelləşdirmə
+  const queue = [...list];
+  let active = 0;
 
+  const runOne = async (tr) => {
+    active++;
+    console.log('——— Yoxlanır:', tr, '———');
+    const started = Date.now();
+    const res = await Promise.race([
+      scrapeOne(browser, tr),
+      (async ()=>{ await sleep(PER_TRACKING_MAX_MS + 5000); throw new Error('per-tracking hard timeout'); })()
+    ]).catch(e => {
+      console.log('⏳ TIMEOUT per tracking:', tr, e.message);
+      return { statusAZ: 'problem', statusCN: '' };
+    });
+    console.log(` → Nəticə: ${tr} ⇒ ${res.statusAZ} (took ${Date.now()-started} ms)`);
+    await postResult(tr, res.statusAZ);
+    active--;
+  };
+
+  const runners = Array(Math.min(CONCURRENCY, queue.length)).fill(0).map(async () => {
+    while (queue.length) {
+      const tr = queue.shift();
+      await runOne(tr);
+      // anti-bot üçün kiçik fasilə
+      await sleep(600);
+    }
+  });
+
+  await Promise.all(runners);
   await browser.close();
+  console.log('=== RUN END ===');
 }
+
 
 if (require.main === module) {
   main().catch(err => { console.error('FATAL:', err); process.exit(1); });
