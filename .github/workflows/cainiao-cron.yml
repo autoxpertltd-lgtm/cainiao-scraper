@@ -2,12 +2,13 @@ name: Cainiao Scraper (cron)
 
 on:
   schedule:
-    - cron: "0 */2 * * *"   # hər 2 saat
+    - cron: "0 */2 * * *"   # hər 2 saatda bir
   workflow_dispatch: {}      # əl ilə işə salmaq üçün
 
 jobs:
   run:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,11 +27,10 @@ jobs:
             libatk-bridge2.0-0 libatk1.0-0 libcups2 libdrm2 \
             libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1
 
-      - name: Install npm deps
-        run: npm ci
+      - name: Install deps
+        run: npm install --no-audit --no-fund
 
       - name: Run scraper
         env:
-          # ehtiyac olarsa puppeteer chromium yükləyəcək
           PUPPETEER_SKIP_DOWNLOAD: "false"
         run: node scraper.js
