@@ -1,9 +1,8 @@
-# .github/workflows/cainiao-cron.yml
 name: Cainiao Scraper (cron)
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # hər 15 dəqiqə (istəyinə görə)
+    - cron: "*/15 * * * *"   # hər 15 dəqiqə
   workflow_dispatch: {}
 
 jobs:
@@ -30,7 +29,6 @@ jobs:
 
       - name: Install npm deps
         run: npm install
-
 
       - name: Run scraper
         env:
