@@ -1,9 +1,8 @@
 {
   "name": "cainiaoscraper",
   "version": "1.0.0",
-  "description": "Automatic Cainiao tracking scraper for Google Sheets",
+  "description": "Cainiao tracking scraper for Google Sheets",
   "main": "scraper.js",
-  "type": "commonjs",
   "scripts": {
     "start": "node scraper.js"
   },
