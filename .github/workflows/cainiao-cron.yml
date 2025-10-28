@@ -15,13 +15,16 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Chromium deps
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libnss3 libxss1 fonts-liberation libasound2 \
-            libatk-bridge2.0-0 libatk1.0-0 libcups2 libdrm2 \
-            libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1
+     - name: Install Chromium deps
+  run: |
+    sudo apt-get update
+    sudo apt-get install -y \
+      libnss3 libxss1 fonts-liberation \
+      libatk-bridge2.0-0 libatk1.0-0 libcups2 libdrm2 \
+      libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1
+    # libasound2 paketini endirilməyə bilər, buna görə əlavə yoxlama:
+    sudo apt-get install -y --no-install-recommends libasound2 || echo "libasound2 not available"
+
 
       - name: Install deps
         run: npm ci
