@@ -2,8 +2,8 @@ name: Cainiao Scraper (cron)
 
 on:
   schedule:
-    - cron: "0 */2 * * *"   # hər 2 saatda bir
-  workflow_dispatch: {}      # əl ilə də işə sala bilərsən
+    - cron: "0 */2 * * *"   # hər 2 saat
+  workflow_dispatch: {}      # əl ilə işə salmaq üçün
 
 jobs:
   run:
@@ -17,8 +17,20 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install deps
+      # Puppeteer üçün lazım olan sistem kitabxanaları
+      - name: Install Chromium deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnss3 libxss1 fonts-liberation libasound2 \
+            libatk-bridge2.0-0 libatk1.0-0 libcups2 libdrm2 \
+            libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1
+
+      - name: Install npm deps
         run: npm ci
 
       - name: Run scraper
+        env:
+          # ehtiyac olarsa puppeteer chromium yükləyəcək
+          PUPPETEER_SKIP_DOWNLOAD: "false"
         run: node scraper.js
