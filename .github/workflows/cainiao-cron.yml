@@ -1,9 +1,9 @@
 name: Cainiao Scraper (cron)
 
 on:
+  workflow_dispatch: {}       # əl ilə RUN düyməsi üçün
   schedule:
-    - cron: "*/15 * * * *"     # hər 15 dəqiqə (UTC)
-  workflow_dispatch: {}
+    - cron: "*/15 * * * *"    # hər 15 dəqiqə (UTC)
 
 jobs:
   run:
@@ -15,29 +15,24 @@ jobs:
         with:
           node-version: '18'
 
-     - name: Install Chromium deps
-  run: |
-    sudo apt-get update
-    sudo apt-get install -y \
-      libnss3 libxss1 fonts-liberation \
-      libatk-bridge2.0-0 libatk1.0-0 libcups2 libdrm2 \
-      libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1
-    # libasound2 paketini endirilməyə bilər, buna görə əlavə yoxlama:
-    sudo apt-get install -y --no-install-recommends libasound2 || echo "libasound2 not available"
-
+      - name: Install Chromium deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnss3 libxss1 fonts-liberation \
+            libatk-bridge2.0-0 libatk1.0-0 libcups2 libdrm2 \
+            libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1 || true
 
       - name: Install deps
         run: npm ci
 
       - name: Run scraper
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: "false"
         run: node scraper.js
 
-      - name: Upload debug artifacts (if any)
+      - name: Upload debug (if any)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: debug-html
+          name: debug
           path: debug/
           if-no-files-found: ignore
