@@ -1,0 +1,14 @@
+{
+  "name": "cainiao-scraper",
+  "version": "1.0.0",
+  "private": true,
+  "main": "scraper.js",
+  "scripts": {
+    "start": "node scraper.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.9",
+    "puppeteer": "^21.5.0",
+    "random-useragent": "^0.5.0"
+  }
+}
