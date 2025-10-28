@@ -194,8 +194,12 @@ async function main() {
   if (!list.length) { console.log('Heç bir izləmə kodu tapılmadı.'); return; }
 
   const browser = await puppeteer.launch({
-    args: ['--no-sandbox','--disable-setuid-sandbox','--disable-gpu',
-    '--disable-dev-shm-usage']
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-gpu',
+      '--disable-dev-shm-usage'   // GitHub Actions mühitində vacib
+    ]
   });
 
   for (const tr of list) {
