@@ -2,42 +2,29 @@ name: Cainiao Scraper (cron)
 
 on:
   schedule:
-    - cron: "0 */2 * * *"   # hər 2 saatda bir
-  workflow_dispatch: {}      # əl ilə işə salmaq üçün
+    - cron: "*/15 * * * *"   # hər 15 dəqiqədə bir (UTC) — daha tez işləyəcək
+  workflow_dispatch: {}      # əl ilə də işə sala bilərsən
 
 jobs:
   run:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 12      # job 12 dəqiqəni keçməsin (ilişməsin)
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      # Ubuntu 24.04 (noble) üçün Puppeteer dependensiləri
-      - name: Install Chromium deps
+      - name: Chromium deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            libnss3 \
-            libxss1 \
-            fonts-liberation \
-            libatk-bridge2.0-0 \
-            libatk1.0-0 \
-            libcups2 \
-            libdrm2 \
-            libxkbcommon0 \
-            libgbm1 \
-            libgtk-3-0 \
-            libxshmfence1 \
-            libasound2t64
+          sudo apt-get install -y \
+            libnss3 libxss1 fonts-liberation libasound2 \
+            libatk-bridge2.0-0 libatk1.0-0 libcups2 libdrm2 \
+            libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1
 
       - name: Install deps
-        run: npm install --no-audit --no-fund
+        run: npm ci
 
       - name: Run scraper
         env:
