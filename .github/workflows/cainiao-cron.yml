@@ -2,7 +2,7 @@ name: Cainiao Scraper (cron)
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # hər 15 dəqiqə
+    - cron: "*/15 * * * *"     # hər 15 dəqiqə (UTC)
   workflow_dispatch: {}
 
 jobs:
@@ -11,26 +11,30 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Install Chromium deps (Ubuntu 24.04 / noble)
+      - name: Install Chromium deps
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libnss3 libxss1 fonts-liberation \
+            libnss3 libxss1 fonts-liberation libasound2 \
             libatk-bridge2.0-0 libatk1.0-0 libcups2 libdrm2 \
-            libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1 \
-            libasound2t64 libx11-xcb1 libxcomposite1 libxdamage1 \
-            libxfixes3 libxrandr2 libxrender1 libpango-1.0-0 \
-            libpangocairo-1.0-0 libcairo2 libgdk-pixbuf-2.0-0
+            libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1
 
-      - name: Install npm deps
-        run: npm install
+      - name: Install deps
+        run: npm ci
 
       - name: Run scraper
         env:
           PUPPETEER_SKIP_DOWNLOAD: "false"
         run: node scraper.js
+
+      - name: Upload debug artifacts (if any)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-html
+          path: debug/
+          if-no-files-found: ignore
