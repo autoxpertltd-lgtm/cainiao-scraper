@@ -1,17 +1,17 @@
 name: Cainiao Scraper (cron)
 
 on:
-  workflow_dispatch: {}       # əl ilə RUN düyməsi üçün
+  workflow_dispatch: {}
   schedule:
-    - cron: "*/15 * * * *"    # hər 15 dəqiqə (UTC)
+    - cron: "*/15 * * * *"
 
 jobs:
   run:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65
         with:
           node-version: '18'
 
@@ -31,7 +31,7 @@ jobs:
 
       - name: Upload debug (if any)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9
         with:
           name: debug
           path: debug/
