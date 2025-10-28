@@ -29,7 +29,8 @@ jobs:
             libpangocairo-1.0-0 libcairo2 libgdk-pixbuf-2.0-0
 
       - name: Install npm deps
-        run: npm ci
+        run: npm install
+
 
       - name: Run scraper
         env:
