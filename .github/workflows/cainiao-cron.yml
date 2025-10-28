@@ -1,29 +1,34 @@
+# .github/workflows/cainiao-cron.yml
 name: Cainiao Scraper (cron)
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # hər 15 dəqiqədə bir (UTC) — daha tez işləyəcək
-  workflow_dispatch: {}      # əl ilə də işə sala bilərsən
+    - cron: "*/15 * * * *"   # hər 15 dəqiqə (istəyinə görə)
+  workflow_dispatch: {}
 
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 12      # job 12 dəqiqəni keçməsin (ilişməsin)
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Chromium deps
+      - name: Install Chromium deps (Ubuntu 24.04 / noble)
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libnss3 libxss1 fonts-liberation libasound2 \
+            libnss3 libxss1 fonts-liberation \
             libatk-bridge2.0-0 libatk1.0-0 libcups2 libdrm2 \
-            libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1
+            libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1 \
+            libasound2t64 libx11-xcb1 libxcomposite1 libxdamage1 \
+            libxfixes3 libxrandr2 libxrender1 libpango-1.0-0 \
+            libpangocairo-1.0-0 libcairo2 libgdk-pixbuf-2.0-0
 
-      - name: Install deps
+      - name: Install npm deps
         run: npm ci
 
       - name: Run scraper
