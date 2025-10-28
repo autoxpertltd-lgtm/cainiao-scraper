@@ -220,14 +220,25 @@ async function main() {
   });
 
   for (const tr of list) {
-    console.log('Yoxlanır:', tr);
-    const res = await Promise.race([
-      scrapeWithRetry(browser, tr),
-      (async ()=>{ await sleep(PER_TRACKING_MAX_MS + 5000); return { statusAZ:'problem' }; })()
-    ]);
-    console.log(' →', tr, '⇒', res.statusAZ);
-    await postResult(tr, res.statusAZ);
-  }
+  console.log('Yoxlanır:', tr);
+
+  // Hər izləmə kodu üçün yoxlama başlasın və paralel status yaza bilsin
+  const checkPromise = scrapeWithRetry(browser, tr)
+    .then(async (res) => {
+      console.log(' →', tr, '⇒', res.statusAZ);
+      await postResult(tr, res.statusAZ);   // DƏRHAL YAZ
+      return res;
+    })
+    .catch(async (err) => {
+      console.error(`❌ ${tr} üçün səhv: ${err.message}`);
+      await postResult(tr, 'problem');
+      return { statusAZ: 'problem' };
+    });
+
+  // Amma eyni anda 1-dən çox səhifə açmamaq üçün növbəvi icra
+  await checkPromise;
+}
+
 
   await browser.close();
 }
