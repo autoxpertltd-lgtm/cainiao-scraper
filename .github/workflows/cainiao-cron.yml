@@ -1,9 +1,9 @@
 name: Cainiao Scraper (cron)
 
 on:
-  workflow_dispatch: {}       # Manual Run düyməsi üçün
+  workflow_dispatch: {}       # manual start
   schedule:
-    - cron: "*/15 * * * *"    # Hər 15 dəqiqə (UTC)
+    - cron: "*/15 * * * *"    # every 15 min (UTC)
 
 jobs:
   run:
@@ -27,13 +27,13 @@ jobs:
             libatk-bridge2.0-0 libatk1.0-0 libcups2 libdrm2 \
             libxkbcommon0 libgbm1 libgtk-3-0 libxshmfence1 || true
 
-      - name: Install Node dependencies
-        run: npm ci
+      - name: Install dependencies
+        run: npm install
 
       - name: Run scraper
         run: node scraper.js
 
-      - name: Upload debug folder (if exists)
+      - name: Upload debug (if any)
         if: always()
         uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9
         with:
