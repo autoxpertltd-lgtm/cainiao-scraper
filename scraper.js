@@ -57,7 +57,7 @@ async function saveDebug(page, name) {
 
 /** Google Sheets-dən siyahını alır (yalnız aktiv izləmə kodları) */
 async function getTrackingList() {
-  const res = await fetch(`${WEBAPP_URL}?secret=${encodeURIComponent(SECRET)}`);
+  const res = await fetch(`${WEBAPP_URL}?secret=${encodeURIComponent(SECRET)}&op=list`);
   const js = await res.json();
   if (!js.ok) throw new Error('WebApp doGet error: ' + (js.error || 'unknown'));
   return (js.items || []).map(x => String(x).trim()).filter(Boolean);
