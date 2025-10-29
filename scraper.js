@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Google Apps Script bağlantısı
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwO09UI9cMA2Gj2NIAQAkUCgEb0x3U9E5xaUBQApvuTn-nIs9Ip1DyMlRSXjgC12YCV/exec';
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyk9pBKa1lEYzD26fIGkvSv2h2obOIkal60U-6rHqXm5L1WehcRFtZu_14sv5OnPRSu/exec';
 const SECRET     = 'AKfycbzArtHCNqjQA';
 
 // Cainiao səhifəsi və selektorlar
