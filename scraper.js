@@ -57,11 +57,38 @@ async function saveDebug(page, name) {
 
 /** Google Sheets-dən siyahını alır (yalnız aktiv izləmə kodları) */
 async function getTrackingList() {
-  const res = await fetch(`${WEBAPP_URL}?secret=${encodeURIComponent(SECRET)}&op=list`);
-  const js = await res.json();
-  if (!js.ok) throw new Error('WebApp doGet error: ' + (js.error || 'unknown'));
-  return (js.items || []).map(x => String(x).trim()).filter(Boolean);
+  const base = `${WEBAPP_URL}?secret=${encodeURIComponent(SECRET)}`;
+
+  // 1) op=list ilə cəhd
+  let url = `${base}&op=list`;
+  let res = await fetch(url, { method: 'GET' });
+  let text = await res.text();
+  try {
+    const js = JSON.parse(text);
+    if (js.ok && Array.isArray(js.items)) {
+      return js.items.map(x => String(x).trim()).filter(Boolean);
+    }
+    // server ok:false və error: unknown op veribsə -> fallback
+    console.error('GET list not ok:', js.error || js);
+  } catch {
+    console.error('GET list JSON parse fail:', text.slice(0,200));
+  }
+
+  // 2) Fallback: op olmadan köhnə endpoint
+  url = base; 
+  res = await fetch(url, { method: 'GET' });
+  text = await res.text();
+  try {
+    const js = JSON.parse(text);
+    if (js.ok && Array.isArray(js.items)) {
+      return js.items.map(x => String(x).trim()).filter(Boolean);
+    }
+    throw new Error('WebApp doGet error: ' + (js.error || 'unknown'));
+  } catch (e) {
+    throw new Error('WebApp doGet error: ' + (e.message || text.slice(0,200)));
+  }
 }
+
 
 /** Cavabı geri göndər */
 async function postResult(tracking, status) {
