@@ -6,8 +6,8 @@ const fs = require('fs');
 const path = require('path');
 
 // Google Apps Script bağlantısı
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyk9pBKa1lEYzD26fIGkvSv2h2obOIkal60U-6rHqXm5L1WehcRFtZu_14sv5OnPRSu/exec';
-const SECRET     = 'AKfycbzArtHCNqjQA';
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbx2f-L0zUwLIs7S6l7w9K2-PZi1vimg-AYul8ygEltzmIyAMztChqKkY3Tazi5SxFKe/exec';
+const SECRET     = 'AKfycbwvxPcoqBfvlifWgoy3OP';
 
 // Cainiao səhifəsi və selektorlar
 const PAGE_URL   = 'https://page.cainiao.com/guoguo/app-myexpress-taobao/search-express.html';
